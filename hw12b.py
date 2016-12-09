@@ -1,7 +1,5 @@
 import numpy as np
 from numpy import linalg as LA
-import os
-import gc
 
 def forward_propagation(X, Y, S, W):
 	for l in range(1, len(W)):
@@ -109,7 +107,6 @@ def main():
 		if itr%100 == 0:
 			print(itr, error)
 		fwrite.write(str(itr) + " " + str(error) + "\n")
-		gc.collect()
 	print("W", W)
 	print("error", error)
 
