@@ -1,7 +1,6 @@
 import numpy as np
 from numpy import linalg as LA
 import os
-from wmi import WMI
 import gc
 
 def forward_propagation(X, Y, S, W):
@@ -111,9 +110,6 @@ def main():
 			print(itr, error)
 		fwrite.write(str(itr) + " " + str(error) + "\n")
 		gc.collect()
-		w = WMI('.')
-		result = w.query("SELECT WorkingSet FROM Win32_PerfRawData_PerfProc_Process WHERE IDProcess=%d" % os.getpid())
-		print(int(result[0].WorkingSet))
 	print("W", W)
 	print("error", error)
 
