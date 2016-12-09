@@ -1,8 +1,5 @@
 import numpy as np
 from numpy import linalg as LA
-import os
-from wmi import WMI
-import gc
 
 def forward_propagation(X, Y, S, W):
 	for l in range(1, len(W)):
@@ -55,7 +52,6 @@ def main():
 	iterations = 2 * (10 **6)
 	X = []
 	Y = []
-	gradient = []
 
 	for line in f:
 		arr = line.split(' ')
@@ -77,6 +73,7 @@ def main():
 		else:
 			Y.append(-1)
 
+	og_X = list(X)
 	S = [np.matrix('1 '*(inputs + 1)).T]
 	W = [np.matrix('.025 ' + '.025 '*(inputs)).T]
 	sigma = []
@@ -88,10 +85,7 @@ def main():
 
 	for itr in range(0, iterations):
 		for x in range(0, len(X)):
-			for y in range(1, len(X[x])):
-				del X[x][1]
-		for g in range(0, len(gradient)):
-			del gradient[0]
+			X[x] = og_X[x][:]
 		gradient = []
 		error = 0
 		for i in range(0, m):
@@ -100,8 +94,6 @@ def main():
 		for x in range(0, len(X)):
 			error += forward_propagation(X[x], Y[x], S, W)
 			sigma = back_propagation(X[x], Y[x], S, W, sigma)
-			for s in range(0, len(S)):
-				del S[0]
 			for j in range(0, len(X[x]) - 1):
 				gradient[j] += np.dot(X[x][j], sigma[j + 1].T) / len(X)
 		error /= len(X)
@@ -110,10 +102,6 @@ def main():
 		if itr%100 == 0:
 			print(itr, error)
 		fwrite.write(str(itr) + " " + str(error) + "\n")
-		gc.collect()
-		w = WMI('.')
-		result = w.query("SELECT WorkingSet FROM Win32_PerfRawData_PerfProc_Process WHERE IDProcess=%d" % os.getpid())
-		print(int(result[0].WorkingSet))
 	print("W", W)
 	print("error", error)
 
